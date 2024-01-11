@@ -12,33 +12,41 @@ class LRUCache:
         self.miss = 0
         self.hit = None
         self.getList = []
+        self.references = 0
 
     
     def put(self, key, value):
-        if self.checking(key) == -1:
-            if self.capacity != 3:
+        if 0<=key<=100 and 0<=value<=100:
+            self.references += 1
+            if self.checking(key) == -1:
+                if self.capacity != 50:
+                    
+                    
+                    if self.front == None:
+                        self.front = Node(key, value)
+                        self.rear = self.front
+                        self.capacity += 1
+                        self.miss += 1
+                        return "Added Successfully!!!!!"
+
+                    newNode = Node(key, value)
+                    self.rear.next = newNode     
+                    self.rear = self.rear.next
+                    self.capacity+=1
+                    self.miss+= 1
+                    return "Updated Cache!"
                 
-                
-                if self.front == None:
-                    self.front = Node(key, value)
-                    self.rear = self.front
-                    self.capacity += 1
-                    return "Added Successfully!!!!!"
 
-                newNode = Node(key, value)
-                self.rear.next = newNode     
-                self.rear = self.rear.next
-                self.capacity+=1
-                return "Updated Cache!"
-            
+                elif self.capacity == 50:
+                    self.front = self.front.next
+                    self.rear.next = Node(key, value)
+                    self.rear =  self.rear.next
+                    self.miss +=1
 
-            elif self.capacity == 3:
-                self.front = self.front.next
-                self.rear.next = Node(key, value)
-                self.rear =  self.rear.next
-
+            else:
+                self.updateValue(key,value)
         else:
-            self.updateValue(key,value)
+            print("The key or value should be between 0 - 100")    
 
     def updateValue(self,key,value):
         a = self.front
@@ -54,6 +62,7 @@ class LRUCache:
             
     
     def get(self, key):
+        self.references += 1
         key = key 
         getValue = self.checking(key)
         if getValue != -1:
@@ -74,8 +83,9 @@ class LRUCache:
                 b = b.next
 
         else:
-            print("The Key is not present")
             self.miss += 1
+            print(-1)
+            return
                 
 
         
@@ -97,6 +107,14 @@ class LRUCache:
             a = a.next
         print("None")
 
+    def calculateMiss(self):
+        print(f"Miss = {self.miss}")
+        print(f"References = {self.references}")
+        x = int((self.miss/self.references)*100)
+        print(f"The Miss Rate is {x}%")
+        y = 100 - x
+        print(f"The Hit Rate is {y}%")
+
 
 print("                                                          *******************************  ")
 print("                                                          * Welcome To LRUCache Program *  ")
@@ -110,25 +128,45 @@ print("                                                          ***************
 
 userInput = input("Enter c to conitnue......... ").lower()
 if userInput == "c":
-    obj1 = LRUCache()
-    obj1.put(1,'a')
-    obj1.put(2,'b')
-    obj1.put(3,'c')
-    obj1.traverse()
-    obj1.put(1,'k')
-    obj1.traverse()
-    obj1.put(6,'m')
-    obj1.put(8,'l')
-    obj1.traverse()
-    obj1.put(6,'v')
-    obj1.traverse()
-    obj1.put(8,'n')
-    obj1.traverse()
-    obj1.get(3)
-    obj1.traverse()
-    obj1.get(8)
-    obj1.traverse()
-    obj1.get(9)
+    # obj1 = LRUCache()
+    # obj1.put(1,'a')
+    # obj1.put(2,'b')
+    # obj1.put(3,'c')
+    # obj1.traverse()
+    # obj1.put(1,'k')
+    # obj1.traverse()
+    # obj1.put(6,'m')
+    # obj1.put(8,'l')
+    # obj1.traverse()
+    # obj1.put(6,'v')
+    # obj1.traverse()
+    # obj1.put(8,'n')
+    # obj1.traverse()
+    # obj1.get(3)
+    # obj1.traverse()
+    # obj1.get(8)
+    # obj1.traverse()
+    # obj1.get(9)
+    # x = obj1.miss/obj1.references
+    
+    # print(x)
+    cache = LRUCache()
+    for i in range(50):
+        cache.put(i, i)
+
+    for i in range(1,101,2):
+        cache.get(i)
+
+    for i in range(101):
+        count = 0
+        for j in range(1,i+1):
+            if i % j == 0:
+                count += 1
+        if count == 2:
+            cache.put(i,i)
+    cache.calculateMiss()
+    cache.traverse()
+
 
 
 
